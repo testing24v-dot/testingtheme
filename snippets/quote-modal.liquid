@@ -1,0 +1,352 @@
+{% if product.metafields.custom.show_quote_button == true or product.tags contains 'quote' %}
+  <style>
+    .qp-step-container { display: none; }
+    .qp-step-container.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .qp-radio-label {
+      display: block; padding: 18px; border: 2px solid #e5e7eb; margin-bottom: 12px; border-radius: 8px;
+      cursor: pointer; text-align: center; font-weight: 500; font-size: 15px; background: #fff;
+      transition: all 0.2s ease; color: #374151; position: relative;
+    }
+    .qp-radio-label:hover { border-color: #003566; background: #f0f4ff; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .qp-radio-label input { position: absolute; left: 20px; top: 22px; width: 18px; height: 18px; accent-color: #003566; }
+    
+    .qp-btn {
+      background: #003566; color: white; padding: 14px 28px; border: none; border-radius: 6px; cursor: pointer;
+      font-weight: 600; font-size: 15px; width: 100%; transition: background 0.2s;
+    }
+    .qp-btn:hover { background: #002244; }
+    .qp-btn-sec {
+      background: #fff; color: #003566; border: 2px solid #003566; padding: 12px 28px; border-radius: 6px; cursor: pointer;
+      font-weight: 600; font-size: 15px; transition: all 0.2s;
+    }
+    .qp-btn-sec:hover { background: #f0f4ff; }
+    .qp-nav-btns { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
+    
+    .qp-input {
+      width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; margin-bottom: 16px;
+      box-sizing: border-box; transition: border-color 0.2s; outline: none;
+    }
+    .qp-input:focus { border-color: #003566; }
+    .qp-title { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 25px; text-align: left; }
+  </style>
+
+  <!-- Multi-Step Quote Modal -->
+  <div id="QuoteModal-{{ product.id }}" class="qp-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2147483647 !important; overflow-y:auto; backdrop-filter: blur(4px);">
+    <div class="qp-modal-content" style="background:#fff; width:100%; max-width:600px; margin:40px auto; border-radius:16px; padding:45px; position:relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+      
+      <!-- Close Button -->
+      <button type="button" onclick="closeQuoteModal(this, '{{ product.id }}')" style="position:absolute; top:20px; right:20px; background:#f3f4f6; border:none; border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; color:#4b5563; font-weight:bold; transition: background 0.2s;">✕</button>
+
+      <!-- Progress Bar -->
+      <div style="margin-bottom: 30px;" class="qp-progress-wrapper">
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 8px; font-weight: 600;">Progress <span class="qp-prog-text" id="qp-prog-text-{{ product.id }}">10%</span></p>
+        <div style="background:#e5e7eb; height:8px; border-radius:10px; overflow:hidden;">
+          <div class="qp-progress-bar" id="quote-progress-{{ product.id }}" style="background:linear-gradient(90deg, #003566, #00509e); height:100%; width: 10%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+        </div>
+      </div>
+
+      {%- assign quote_form_id = 'RequestQuoteForm-' | append: section.id | append: '-' | append: product.id -%}
+      <div id="QuoteSuccess-{{ product.id }}" style="display:none; background:#ecfdf5; border:1px solid #10b981; padding:30px; border-radius:12px; margin-bottom:20px; text-align: center; color:#065f46; animation: fadeIn 0.4s ease;">
+        <h3 style="margin-top:0; color:#065f46; font-size:22px;">🎉 Quote Request Sent!</h3>
+        <p style="margin-bottom:0; font-size:15px; line-height:1.6;">Thank you! Our specialists will review your requirements and get back to you with a tailored quote within 24 hours.</p>
+        <div style="margin-top:20px; font-size:13px; color:#059669; font-weight:600;">Resetting for another request in <span class="qp-reset-timer">3</span>s...</div>
+      </div>
+
+      {% form 'customer', id: quote_form_id, class: 'qp-ajax-form' %}
+        <div class="qp-form-content">
+          <input type="hidden" name="contact[tags]" value="Quote Request">
+          <input type="hidden" name="contact[note][Product for Quote]" value="{{ product.title | escape }}">
+
+          <!-- STEP 1: Industry -->
+          <div class="qp-step-container active" id="qp-step-1-{{ product.id }}">
+            <h2 class="qp-title">What Industry Are You In?</h2>
+            <label class="qp-radio-label">
+              <input type="radio" onchange="setTimeout(function(){qpNextStep(this, 1,'{{ product.id }}')},250)" name="contact[note][Industry]" value="Hospitality" required>
+              Hospitality
+            </label>
+            <label class="qp-radio-label">
+              <input type="radio" onchange="setTimeout(function(){qpNextStep(this, 1,'{{ product.id }}')},250)" name="contact[note][Industry]" value="Retail">
+              Retail
+            </label>
+            <label class="qp-radio-label">
+              <input type="radio" onchange="setTimeout(function(){qpNextStep(this, 1,'{{ product.id }}')},250)" name="contact[note][Industry]" value="Other">
+              Other
+            </label>
+            <div class="qp-nav-btns" style="justify-content: flex-end;">
+              <button type="button" class="qp-btn" style="width:auto;" onclick="qpNextStep(this, 1, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Business Type -->
+          <div class="qp-step-container" id="qp-step-2-{{ product.id }}">
+            <h2 class="qp-title">What Type Of Business Are You?</h2>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 2,'{{ product.id }}')},250)" name="contact[note][Business Type]" value="Food and Grocery Store" required> Food and Grocery Store</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 2,'{{ product.id }}')},250)" name="contact[note][Business Type]" value="Fashion, Sports or Homeware Store"> Fashion, Sports or Homeware Store</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 2,'{{ product.id }}')},250)" name="contact[note][Business Type]" value="Convenience Store"> Convenience Store</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 2,'{{ product.id }}')},250)" name="contact[note][Business Type]" value="Other"> Other</label>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 2, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 2, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: System Required -->
+          <div class="qp-step-container" id="qp-step-3-{{ product.id }}">
+            <h2 class="qp-title">What Sort Of System Do You Require?</h2>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 3,'{{ product.id }}')},250)" name="contact[note][System Requirement]" value="Complete EPOS system" required> Complete EPOS system</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 3,'{{ product.id }}')},250)" name="contact[note][System Requirement]" value="Just EPOS software"> Just EPOS software</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 3,'{{ product.id }}')},250)" name="contact[note][System Requirement]" value="Unsure, please advise"> Unsure, please advise</label>
+            <p style="font-size: 13px; color: #6b7280; text-align: center; margin-top:15px;">Select "Complete EPOS System" if you need hardware such as tills, scanners, receipt printers, etc.</p>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 3, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 3, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Tablet -->
+          <div class="qp-step-container" id="qp-step-4-{{ product.id }}">
+            <h2 class="qp-title">Are You Interested In A Tablet/iPad-Based Solution?</h2>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 4,'{{ product.id }}')},250)" name="contact[note][Tablet Solution]" value="Yes" required> Yes</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 4,'{{ product.id }}')},250)" name="contact[note][Tablet Solution]" value="No"> No</label>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 4, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 4, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 5: Terminals -->
+          <div class="qp-step-container" id="qp-step-5-{{ product.id }}">
+            <h2 class="qp-title">How Many Terminals Will You Require?</h2>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 5,'{{ product.id }}')},250)" name="contact[note][Terminals]" value="1-2" required> 1-2</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 5,'{{ product.id }}')},250)" name="contact[note][Terminals]" value="3-5"> 3-5</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 5,'{{ product.id }}')},250)" name="contact[note][Terminals]" value="6-10"> 6-10</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 5,'{{ product.id }}')},250)" name="contact[note][Terminals]" value="Over 10"> Over 10</label>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 5, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 5, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 6: Timeframe -->
+          <div class="qp-step-container" id="qp-step-6-{{ product.id }}">
+            <h2 class="qp-title">How Soon Do You Need The System?</h2>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 6,'{{ product.id }}')},250)" name="contact[note][Timeframe]" value="As soon as possible" required> As soon as possible</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 6,'{{ product.id }}')},250)" name="contact[note][Timeframe]" value="Within 3 months"> Within 3 months</label>
+            <label class="qp-radio-label"><input type="radio" onchange="setTimeout(function(){qpNextStep(this, 6,'{{ product.id }}')},250)" name="contact[note][Timeframe]" value="Within 6 months"> Within 6 months</label>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 6, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 6, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 7: Postcode -->
+          <div class="qp-step-container" id="qp-step-7-{{ product.id }}">
+            <h2 class="qp-title">What's Your Postcode?</h2>
+            <p style="font-size: 13px; color: #6b7280; text-align: center; margin-bottom:15px;">Get an accurate quote for your area</p>
+            <div style="text-align:left;"><label style="font-size:14px; font-weight:600; color:#374151;">Enter postcode.</label></div>
+            <input type="text" name="contact[note][Postcode]" class="qp-input" placeholder="e.g. SW1A 1AA" required>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 7, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 7, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 8: Email -->
+          <div class="qp-step-container" id="qp-step-8-{{ product.id }}">
+            <h2 class="qp-title">Almost There</h2>
+            <p style="font-size: 13px; color: #6b7280; text-align: center; margin-bottom:15px;">Just a couple more details to enter</p>
+            <div style="text-align:left;"><label style="font-size:14px; font-weight:600; color:#374151;">Enter email address.</label></div>
+            <input type="email" name="contact[email]" class="qp-input" placeholder="e.g. name@company.com" required>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 8, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 8, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 9: Name and Business -->
+          <div class="qp-step-container" id="qp-step-9-{{ product.id }}">
+            <h2 class="qp-title">Only Two Steps Left</h2>
+            <div style="text-align:left;"><label style="font-size:14px; font-weight:600; color:#374151;">Enter your name & business name</label></div>
+            <input type="text" name="contact[first_name]" class="qp-input" placeholder="e.g. Joe Bloggs" style="margin-bottom:10px;" required>
+            <input type="text" name="contact[note][Company Name]" class="qp-input" placeholder="e.g. Company Ltd." required>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 9, '{{ product.id }}')">← Previous</button>
+              <button type="button" class="qp-btn" style="width:calc(100% - 150px);" onclick="qpNextStep(this, 9, '{{ product.id }}')">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- STEP 10: Final Step Phone -->
+          <div class="qp-step-container" id="qp-step-10-{{ product.id }}">
+            <h2 class="qp-title">Last Step!</h2>
+            <div style="text-align:left;"><label style="font-size:14px; font-weight:600; color:#374151;">Enter phone no.</label></div>
+            <input type="tel" name="contact[phone]" class="qp-input" placeholder="e.g. 0207 424 3152" required>
+            <input type="hidden" name="contact[note][Phone Number]" class="qp-phone-holder" value="">
+            <p style="font-size: 12px; color: #6b7280; text-align: left; margin-top:5px; margin-bottom:20px;">By submitting your information, you agree to our Terms and Conditions and Privacy Policy.</p>
+            <div class="qp-nav-btns">
+              <button type="button" class="qp-btn-sec" onclick="qpPrevStep(this, 10, '{{ product.id }}')">← Previous</button>
+              <button type="submit" class="qp-btn" style="background:#c1121f; width:calc(100% - 150px);">Submit Request 🚀</button>
+            </div>
+          </div>
+
+        </div>
+      {% endform %}
+      
+      <script>
+        (function() {
+          const prodId = '{{ product.id }}';
+          const form = document.getElementById('RequestQuoteForm-{{ section.id }}-' + prodId);
+          const successDiv = document.getElementById('QuoteSuccess-' + prodId);
+          const formContent = form.querySelector('.qp-form-content');
+          const resetTimer = successDiv.querySelector('.qp-reset-timer');
+
+          if (form) {
+            form.addEventListener('submit', function(e) {
+              e.preventDefault();
+              const submitBtn = form.querySelector('button[type="submit"]');
+              const originalBtnContent = submitBtn.innerHTML;
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = 'Sending... ⏳';
+
+              const formData = new FormData(form);
+              
+              // Get phone number and add to notes
+              const phoneInput = form.querySelector('input[type="tel"][name="contact[phone]"]');
+              const phoneHolder = form.querySelector('input[type="hidden"].qp-phone-holder');
+              if (phoneInput && phoneHolder) {
+                phoneHolder.value = phoneInput.value;
+                formData.set('contact[note][Phone Number]', phoneInput.value);
+              }
+              
+              fetch('/contact', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+              })
+              .then(response => {
+                // Success!
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+                
+                // Show Success
+                formContent.style.display = 'none';
+                successDiv.style.display = 'block';
+
+                // Auto-Reset Countdown
+                let timeLeft = 3;
+                const interval = setInterval(() => {
+                  timeLeft--;
+                  resetTimer.innerText = timeLeft;
+                  if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    // Reset Logic
+                    form.reset();
+                    formContent.style.display = 'block';
+                    successDiv.style.display = 'none';
+                    resetTimer.innerText = '3';
+                    
+                    // Reset to Step 1
+                    const modalContent = form.closest('.qp-modal-content');
+                    modalContent.querySelectorAll('.qp-step-container').forEach(el => el.classList.remove('active'));
+                    const firstStep = modalContent.querySelector('#qp-step-1-' + prodId) || 
+                                     modalContent.querySelector('#qp-step-1-quickadd-' + prodId);
+                    if (firstStep) firstStep.classList.add('active');
+                    
+                    // Reset Progress
+                    const progressBar = modalContent.querySelector('.qp-progress-bar');
+                    if (progressBar) progressBar.style.width = '10%';
+                    const progressText = modalContent.querySelector('.qp-prog-text');
+                    if (progressText) progressText.innerText = '10%';
+                  }
+                }, 1000);
+              })
+              .catch(error => {
+                alert("Sorry, something went wrong. Please try again.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+              });
+            });
+          }
+        })();
+
+        if (typeof window.qpNextStep !== 'function') {
+          window.qpNextStep = function(btn, currentStep, prodId) {
+            let modalContent = btn.closest('.qp-modal-content');
+            if (!modalContent) return;
+            
+            let container = modalContent.querySelector('#qp-step-' + currentStep + '-' + prodId) || 
+                            modalContent.querySelector('#qp-step-' + currentStep + '-quickadd-' + prodId);
+            
+            if (!container) return;
+            
+            let radios = container.querySelectorAll('input[type="radio"]');
+            if (radios.length > 0) {
+              let isChecked = false;
+              radios.forEach(r => { if(r.checked) isChecked = true; });
+              if (!isChecked) { alert("Please select an option to proceed."); return; }
+            }
+
+            let inputs = container.querySelectorAll('input[required]:not([type="radio"])');
+            if (inputs.length > 0) {
+              let isFilled = true;
+              inputs.forEach(inp => { if(!inp.value.trim()) isFilled = false; });
+              if (!isFilled) { alert("Please fill in the required field to proceed."); return; }
+            }
+
+            let nextStep = currentStep + 1;
+            modalContent.querySelectorAll('.qp-step-container').forEach(el => el.classList.remove('active'));
+            
+            let nextEl = modalContent.querySelector('#qp-step-' + nextStep + '-' + prodId) || 
+                         modalContent.querySelector('#qp-step-' + nextStep + '-quickadd-' + prodId);
+            
+            if (nextEl) nextEl.classList.add('active');
+            
+            let pct = Math.round((nextStep / 10) * 100);
+            let progressBar = modalContent.querySelector('.qp-progress-bar');
+            if (progressBar) progressBar.style.width = pct + '%';
+            
+            let progressText = modalContent.querySelector('.qp-prog-text');
+            if (progressText) progressText.innerText = pct + '%';
+          };
+
+          window.qpPrevStep = function(btn, currentStep, prodId) {
+            let modalContent = btn.closest('.qp-modal-content');
+            if (!modalContent) return;
+            
+            let prevStep = currentStep - 1;
+            modalContent.querySelectorAll('.qp-step-container').forEach(el => el.classList.remove('active'));
+            
+            let prevEl = modalContent.querySelector('#qp-step-' + prevStep + '-' + prodId) || 
+                         modalContent.querySelector('#qp-step-' + prevStep + '-quickadd-' + prodId);
+            
+            if (prevEl) prevEl.classList.add('active');
+            
+            let pct = Math.round((prevStep / 10) * 100);
+            let progressBar = modalContent.querySelector('.qp-progress-bar');
+            if (progressBar) progressBar.style.width = pct + '%';
+            
+            let progressText = modalContent.querySelector('.qp-prog-text');
+            if (progressText) progressText.innerText = pct + '%';
+          };
+        }
+
+        if (typeof window.openQuoteModal !== 'function') {
+          window.openQuoteModal = function(btn, prodId) {
+            const modal = document.getElementById('QuoteModal-' + prodId);
+            if (modal) {
+              modal.style.display = 'block';
+              document.body.appendChild(modal);
+            }
+          }
+        }
+
+        if (typeof window.closeQuoteModal !== 'function') {
+          window.closeQuoteModal = function(btn, prodId) {
+            const modal = document.getElementById('QuoteModal-' + prodId);
+            if (modal) modal.style.display = 'none';
+          }
+        }
+      </script>
+    </div>
+  </div>
+{% endif %}

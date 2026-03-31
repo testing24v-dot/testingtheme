@@ -1,0 +1,73 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "custom_liquid_Wie4jr": {
+      "type": "custom-liquid",
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "<div style=\"max-width:1000px; margin:40px auto; padding:0 20px;\">\n  <h2 style=\"text-align:center; margin-bottom:30px;\">Latest Blog Posts</h2>\n\n  <div style=\"display:grid; grid-template-columns: repeat(3,1fr); gap:20px;\">\n\n    {% for post in shop.metaobjects.blog_post.values %}\n      <div style=\"border:1px solid #ddd; border-radius:10px; \n                  padding:20px; background:#fff;\">\n        \n        <!-- Blog Title -->\n        <h3 style=\"margin:0 0 10px 0; color:#333;\">\n          {{ post.title.value }}\n        </h3>\n\n        <!-- Blog Content -->\n        <p style=\"color:#666; font-size:14px; margin:0 0 15px 0;\">\n          {{ post.contant.value }}\n        </p>\n\n        <!-- Author (Team Member Reference) -->\n        {% assign author = post.author.value %}\n        {% if author %}\n          <div style=\"display:flex; align-items:center; \n                      gap:10px; border-top:1px solid #eee; \n                      padding-top:15px;\">\n            \n            {% if author.image.value %}\n              <img src=\"{{ author.image.value | image_url: width: 50 }}\"\n                   style=\"width:45px; height:45px; \n                          border-radius:50%; object-fit:cover;\">\n            {% endif %}\n\n            <div>\n              <p style=\"margin:0; font-weight:600; font-size:14px;\">\n                {{ author.name.value }}\n              </p>\n              <p style=\"margin:0; color:#999; font-size:12px;\">\n                {{ author.designation.value }}\n              </p>\n            </div>\n\n          </div>\n        {% endif %}\n\n      </div>\n    {% endfor %}\n\n  </div>\n</div>",
+        "color_scheme": "background-1",
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "55172ef6-3a6a-4cfa-b790-88739b47891f": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "main-menu"
+          }
+        },
+        "6e0c08d4-cd4c-439c-b5e2-a483bba29ec2": {
+          "type": "brand_information",
+          "settings": {
+            "show_social": true
+          }
+        },
+        "f95fe295-fbc2-4d2b-a952-72670c2ab328": {
+          "type": "text",
+          "settings": {
+            "heading": "Resources",
+            "subtext": "<ul><li><a href=\"https://shopify.dev/docs/apps/tools/development-stores/generated-data\" target=\"_blank\" title=\"Generated test data developer docs\">Generated test data docs</a></li><li><a href=\"https://shopify.dev/docs/apps/tools/graphiql-admin-api\" target=\"_blank\" title=\"GraphiQL API explorer\">GraphiQL API explorer</a></li></ul>"
+          }
+        }
+      },
+      "block_order": [
+        "55172ef6-3a6a-4cfa-b790-88739b47891f",
+        "6e0c08d4-cd4c-439c-b5e2-a483bba29ec2",
+        "f95fe295-fbc2-4d2b-a952-72670c2ab328"
+      ],
+      "settings": {
+        "color_scheme": "inverse",
+        "newsletter_enable": false,
+        "newsletter_heading": "Subscribe to our emails",
+        "enable_follow_on_shop": true,
+        "show_social": true,
+        "enable_country_selector": false,
+        "enable_language_selector": true,
+        "payment_enable": true,
+        "show_policy": true,
+        "margin_top": 48,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "custom_liquid_Wie4jr",
+    "footer"
+  ]
+}

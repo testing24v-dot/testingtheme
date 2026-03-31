@@ -1,0 +1,336 @@
+<div class="talk-to-expert-wrapper" style="background: {{ section.settings.bg_color }}; padding: 40px 20px;">
+  <div class="talk-to-expert-container">
+    <div class="text-content">
+      <h2 style="margin: 0; font-size: 32px; color: #003b5c; font-weight: normal;">{{ section.settings.heading }}</h2>
+      <p style="margin: 8px 0 0; font-size: 16px; color: #666;">{{ section.settings.subheading }}</p>
+    </div>
+    <div class="button-content">
+      <button id="OpenCallbackModal" class="talk-expert-btn">{{ section.settings.button_text }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Form -->
+<div id="CallbackModal" class="callback-modal" style="display: none;">
+  <div class="modal-overlay" id="ModalOverlay"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Request a Callback</h3>
+      <button class="close-modal" id="CloseCallbackModal">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-desc">POS integrated solutions, who designed to transform service delivery and increase the speed of transactions.</p>
+      
+      {% form 'customer', id: 'RequestCallbackForm' %}
+        <input type="hidden" name="contact[tags]" value="Callback Request">
+        
+        {% if form.posted_successfully? %}
+          <div class="form-success-toast" id="SuccessToast">
+            <span class="toast-icon">✔</span>
+            Thank you for Request a Callback
+          </div>
+          <script>
+            // Ensure modal stays open or shows toast if successfully submitted
+            document.getElementById('CallbackModal').style.display = 'block';
+            setTimeout(() => {
+              document.getElementById('SuccessToast').style.display = 'none';
+              document.getElementById('CallbackModal').style.display = 'none';
+            }, 4000);
+          </script>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="form-error">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name*</label>
+            <input type="text" name="contact[first_name]" required placeholder="First Name">
+          </div>
+          <div class="form-group">
+            <label>Last Name*</label>
+            <input type="text" name="contact[last_name]" required placeholder="Last Name">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Company Name*</label>
+            <input type="text" name="contact[note][Company Name]" required placeholder="Company Name">
+          </div>
+          <div class="form-group">
+            <label>Phone Number*</label>
+            <input type="tel" name="contact[phone]" required placeholder="Phone Number">
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Email Address*</label>
+          <input type="email" name="contact[email]" required placeholder="Email Address">
+        </div>
+
+        <div class="form-group full-width terms">
+          <p>By submitting your information, you agree to our <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>.</p>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn">Send Request</button>
+          <span class="call-us">or call us on {{ section.settings.phone_number }}</span>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .talk-to-expert-wrapper {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin: 40px auto;
+    max-width: 1000px;
+    border-radius: 4px;
+  }
+  .talk-to-expert-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+  }
+  .talk-expert-btn {
+    background-color: #003b5c;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s background;
+  }
+  .talk-expert-btn:hover, .submit-btn:hover {
+    background-color: #002840;
+  }
+
+  /* Modal Styles */
+  .callback-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+  }
+  .modal-content {
+    position: relative;
+    background: #fff;
+    width: 90%;
+    max-width: 550px;
+    border-radius: 4px;
+    z-index: 10000;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+  }
+  .close-modal {
+    background: #003b5c;
+    color: white;
+    border: none;
+    width: 30px; height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: -30px;
+    right: 0;
+  }
+  
+  .modal-desc {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  /* Form Styles */
+  .form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #444;
+  }
+  .form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .full-width {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .terms p {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+  }
+  .terms a {
+    color: #e53e3e;
+    text-decoration: none;
+  }
+  .form-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .submit-btn {
+    background-color: #003b5c;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px;
+  }
+  .call-us {
+    font-size: 13px;
+    color: #003b5c;
+  }
+
+  /* Success Toast */
+  .form-success-toast {
+    background-color: #529851;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .toast-icon {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  @media (max-width: 600px) {
+    .talk-to-expert-container {
+      flex-direction: column;
+      text-align: center;
+      gap: 15px;
+    }
+    .form-row {
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("CallbackModal");
+    const openBtn = document.getElementById("OpenCallbackModal");
+    const closeBtn = document.getElementById("CloseCallbackModal");
+    const overlay = document.getElementById("ModalOverlay");
+
+    openBtn.addEventListener("click", () => {
+      modal.style.display = "block";
+    });
+
+    const closeModal = () => {
+      modal.style.display = "none";
+    };
+
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", closeModal);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Talk to Expert",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ready To Get Started?"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Talk to a POS expert today and learn how QEPOS can help your business."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Talk to an Expert"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone Number",
+      "default": "0161 2056 247"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Talk to Expert Form",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,59 @@
+{% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
+{{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
+
+<div class="collection-hero color-{{ section.settings.color_scheme }} gradient">
+  
+  {%- if section.settings.show_collection_image and collection.image -%}
+    <div style="width:100%; position:relative;">
+      <img
+        src="{{ collection.image | image_url: width: 1500 }}"
+        alt="{{ collection.title }}"
+        style="width:100%; height:400px; object-fit:cover; display:block;"
+      >
+      <div style="position:absolute; bottom:20px; left:30px;">
+        <h1 style="color:#fff; font-size:36px; margin:0;">{{ collection.title }}</h1>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="collection-hero__inner page-width">
+      <div class="collection-hero__text-wrapper">
+        <h1 class="collection-hero__title">{{ collection.title | escape }}</h1>
+      </div>
+    </div>
+  {%- endif -%}
+
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-collection-banner.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "default": true,
+      "label": "t:sections.main-collection-banner.settings.show_collection_description.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "default": false,
+      "label": "t:sections.main-collection-banner.settings.show_collection_image.label"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        { "value": "accent-1", "label": "t:sections.all.colors.accent_1.label" },
+        { "value": "accent-2", "label": "t:sections.all.colors.accent_2.label" },
+        { "value": "background-1", "label": "t:sections.all.colors.background_1.label" },
+        { "value": "background-2", "label": "t:sections.all.colors.background_2.label" },
+        { "value": "inverse", "label": "t:sections.all.colors.inverse.label" }
+      ],
+      "default": "background-1",
+      "label": "t:sections.all.colors.label"
+    }
+  ]
+}
+{% endschema %}

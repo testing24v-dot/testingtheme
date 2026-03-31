@@ -1,0 +1,202 @@
+{% schema %}
+{
+  "name": "Bundle Fixed Final",
+  "settings": [
+    { "type": "text", "id": "bundle_variant_id", "label": "Main Bundle Variant ID" },
+    { "type": "text", "id": "bundle_price", "label": "Offer Price", "default": "$12.99" },
+    { "type": "collection", "id": "collection", "label": "Select Collection" },
+    { "type": "color", "id": "accent_color", "label": "Accent Color", "default": "#000000" }
+  ],
+  "presets": [{ "name": "Bundle Fixed Final" }]
+}
+{% endschema %}
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+  :root { --brand: {{ section.settings.accent_color }}; }
+  .bundle-outer-v18 { background-color: #f5f5f5; padding: 50px 0; min-height: 100vh; font-family: sans-serif; }
+  .bundle-container-v18 { display: flex; gap: 35px; max-width: 1200px; margin: 0 auto; padding: 0 20px; align-items: flex-start; }
+
+  /* Product Cards */
+  .p-grid-v18 { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+  .p-card-v18 { background: #fff; border: 1px solid #e2e2e2; border-radius: 16px; padding: 15px; cursor: pointer; position: relative; transition: 0.3s; overflow: hidden; }
+  .p-card-v18.active { border: 2px solid var(--brand); transform: scale(0.98); }
+  .p-card-v18 img { width: 100%; border-radius: 12px; pointer-events: none; display: block; }
+  
+  /* Number on top left */
+  .p-num-v18 { position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: #000; color: #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; border: 2px solid #fff; z-index: 5; }
+  .p-card-v18.active .p-num-v18 { display: flex; }
+
+  /* Info button FIXED position */
+  .info-btn-v18 { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background: rgba(255,255,255,0.9); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid #ddd; z-index: 10; cursor: pointer; font-size: 12px; }
+
+  /* PROGRESS BAR FIXED */
+  .progress-v18 { margin-bottom: 25px; width: 100%; display: block; }
+  .bar-info-v18 { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .bar-bg-v18 { width: 100%; height: 12px; background: #ddd; border-radius: 10px; position: relative; overflow: hidden; }
+  #line-v18 { height: 100%; background: var(--brand); width: 0%; transition: width 0.4s ease-in-out; border-radius: 10px; display: block !important; }
+
+  /* Right Side Panel */
+  .side-panel-v18 { width: 350px; position: sticky; top: 20px; background: #fff; border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+  .slots-v18 { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; }
+  .slot-v18 { width: 55px; height: 55px; border: 2px dashed #ccc; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fafafa; }
+  .slot-v18.filled { border: 2px solid var(--brand); background: #fff; }
+  .slot-v18 img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Modals */
+  .modal-v18 { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter: blur(4px); display:none; align-items:center; justify-content:center; z-index:10000; }
+  .modal-v18.show { display: flex; }
+  .qv-content { background:#fff; width:90%; max-width:600px; border-radius:20px; display:flex; overflow:hidden; position:relative; }
+  .qv-left { width: 40%; background: #f9f9f9; }
+  .qv-left img { width: 100%; height: 100%; object-fit: cover; }
+  .qv-right { width: 60%; padding: 25px; }
+  .variant-select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin: 10px 0; font-family: inherit; }
+
+  @media (max-width: 1024px) { .bundle-container-v18 { flex-direction: column; } .side-panel-v18 { width: 100%; position: relative; } .qv-content { flex-direction: column; } .qv-left, .qv-right { width: 100%; } }
+</style>
+<my-button></my-button>
+<quantity-selector></quantity-selector>
+<div class="bundle-outer-v18">
+  <div class="bundle-container-v18">
+    <div class="p-grid-v18">
+      {% for product in section.settings.collection.products %}
+        <div class="p-card-v18" id="p-{{ product.id }}" onclick="openQV(event, '{{ product.featured_image | img_url: '600x600' }}', '{{ product.title | escape }}', '{{ product.description | strip_html | truncate: 120 }}', '{{ product.id }}', {{ product.variants | json | escape }})">
+          <div class="p-num-v18" id="num-{{ product.id }}"></div>
+          <div class="info-btn-v18">i</div>
+          <img src="{{ product.featured_image | img_url: '400x400' }}">
+          <h4 style="margin: 12px 0 5px; font-size: 14px;">{{ product.title }}</h4>
+          <div style="font-size: 10px; font-weight: 800; color: var(--brand); letter-spacing: 1px;">SELECT SIZE</div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <aside class="side-panel-v18">
+      <h2 style="margin:0; font-size: 22px;">Build Your Box</h2>
+      <p style="color:var(--brand); font-weight:bold; margin: 5px 0 20px;">5 Items for {{ section.settings.bundle_price }}</p>
+      
+      <div class="progress-v18">
+        <div class="bar-info-v18"><span>YOUR BOX</span><span id="v18-count">0 / 5</span></div>
+        <div class="bar-bg-v18">
+           <div id="line-v18"></div>
+        </div>
+      </div>
+      
+      <div class="slots-v18">
+        {% for i in (0..4) %}<div class="slot-v18" id="s-{{ i }}"></div>{% endfor %}
+      </div>
+      <button id="btn-v18" disabled onclick="openPop()" style="width:100%; padding:18px; background:var(--brand); color:#fff; border:none; border-radius:50px; font-weight:800; cursor:pointer; font-size: 16px;">Complete Box</button>
+    </aside>
+  </div>
+</div>
+
+<div id="qv-modal" class="modal-v18" onclick="closeQV()">
+  <div class="qv-content" onclick="event.stopPropagation()">
+    <div class="qv-left"><img id="qv-img" src=""></div>
+    <div class="qv-right">
+      <h2 id="qv-title" style="margin:0; font-size: 20px;"></h2>
+      <p id="qv-desc" style="font-size:13px; color:#666; margin: 10px 0;"></p>
+      <label style="font-size:11px; font-weight:700; color: #999;">CHOOSE OPTION:</label>
+      <select id="qv-variant-select" class="variant-select"></select>
+      <button id="qv-add-btn" style="background:var(--brand); color:#fff; border:none; padding:15px; border-radius:50px; font-weight:800; width:100%; cursor:pointer; margin-top:5px;">Add to Box</button>
+      <p onclick="closeQV()" style="text-align:center; cursor:pointer; font-size:12px; margin-top:15px; text-decoration:underline; color: #999;">Go Back</p>
+    </div>
+  </div>
+</div>
+
+<div id="m18-modal" class="modal-v18" onclick="closePop()">
+  <div class="modal-card-v18" style="background:#fff; padding:40px; border-radius:24px; text-align:center;" onclick="event.stopPropagation()">
+    <h2 style="font-size: 28px; margin: 0;">Box Ready! ✨</h2>
+    <p style="color: #666; margin: 10px 0 25px;">All items have been added to your selection.</p>
+    <button onclick="finalV18()" style="background:var(--brand); color:#fff; border:none; width:100%; padding:20px; border-radius:100px; font-weight:800; cursor:pointer; font-size: 18px;">Add to Cart</button>
+    <p onclick="closePop()" style="margin-top:20px; cursor:pointer; text-decoration: underline;">Change Selection</p>
+  </div>
+</div>
+
+<script>
+let state = [];
+const LIMIT = 5;
+
+function openQV(e, img, title, desc, productId, variants) {
+  e.stopPropagation();
+  document.getElementById('qv-img').src = img;
+  document.getElementById('qv-title').innerText = title;
+  document.getElementById('qv-desc').innerText = desc;
+  
+  const select = document.getElementById('qv-variant-select');
+  select.innerHTML = '';
+  variants.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.id;
+    opt.text = v.title + (v.available ? '' : ' - Sold Out');
+    opt.disabled = !v.available;
+    select.appendChild(opt);
+  });
+
+  document.getElementById('qv-modal').classList.add('show');
+  document.getElementById('qv-add-btn').onclick = () => {
+    addToBox(productId, title, img, select.value, select.options[select.selectedIndex].text);
+    closeQV();
+  };
+}
+
+function addToBox(productId, title, img, variantId, variantTitle) {
+  const existingIdx = state.findIndex(x => x.productId === productId);
+  if (existingIdx > -1) {
+    state.splice(existingIdx, 1);
+    document.getElementById('p-' + productId).classList.remove('active');
+  } else if (state.length < LIMIT) {
+    state.push({ productId, variantId, title: title + ' (' + variantTitle + ')', img });
+    document.getElementById('p-' + productId).classList.add('active');
+    if (state.length === LIMIT) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+  }
+  renderUI();
+}
+
+function renderUI() {
+  // Update numbers on cards
+  document.querySelectorAll('.p-num-v18').forEach(el => el.innerText = '');
+  state.forEach((item, i) => {
+    const numEl = document.getElementById('num-' + item.productId);
+    if(numEl) numEl.innerText = (i + 1);
+  });
+
+  // Update Progress Bar & Text
+  const count = state.length;
+  document.getElementById('v18-count').innerText = count + " / " + LIMIT;
+  
+  const line = document.getElementById('line-v18');
+  const percentage = (count / LIMIT) * 100;
+  line.style.width = percentage + "%";
+
+  // Update Button
+  document.getElementById('btn-v18').disabled = (count !== LIMIT);
+
+  // Update Slots
+  for (let i = 0; i < LIMIT; i++) {
+    const s = document.getElementById('s-' + i);
+    if(state[i]) {
+      s.innerHTML = `<img src="${state[i].img}">`;
+      s.classList.add('filled');
+    } else {
+      s.innerHTML = '';
+      s.classList.remove('filled');
+    }
+  }
+  if (count === LIMIT) setTimeout(openPop, 600);
+}
+
+function closeQV() { document.getElementById('qv-modal').classList.remove('show'); }
+function openPop() { document.getElementById('m18-modal').classList.add('show'); }
+function closePop() { document.getElementById('m18-modal').classList.remove('show'); }
+
+function finalV18() {
+  let props = { "_bundle_builder": "true" };
+  state.forEach((it, i) => { props[`Item ${i+1}`] = it.title; });
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: [{ id: "{{ section.settings.bundle_variant_id }}", quantity: 1, properties: props }] })
+  }).then(res => { if(res.ok) window.location.href = '/cart'; });
+}
+</script> 

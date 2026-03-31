@@ -1,0 +1,121 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-bar-0": {
+          "type": "announcement",
+          "settings": {
+            "text": "Welcome to our store",
+            "text_alignment": "center",
+            "color_scheme": "background-1",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement-bar-0"
+      ],
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "custom_css": [
+        ".goog-te-gadget {display: none;}"
+      ],
+      "settings": {
+        "logo_position": "middle-left",
+        "menu": "main-menu",
+        "menu_type_desktop": "mega",
+        "sticky_header_type": "always",
+        "show_line_separator": true,
+        "color_scheme": "inverse",
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "mobile_logo_position": "center",
+        "margin_bottom": 0,
+        "padding_top": 8,
+        "padding_bottom": 8
+      }
+    },
+    "1768821759b02c33b6": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "17688903501e5a3c8b": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "custom_liquid_qXbUnD": {
+      "type": "custom-liquid",
+      "disabled": true,
+      "name": "t:sections.custom-liquid.presets.name",
+      "settings": {
+        "custom_liquid": "{% if product.metafields.custom.fabric_type.value != blank %}\n  <p>\n    <strong>Fabric Type:</strong> \n    {{ product.metafields.custom.fabric_type.value }}\n  </p>\n{% endif %}",
+        "color_scheme": "background-1",
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "17688903561c284d13": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "1768890393e04da07b": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "176889037058bac735": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "176889038096947fb3": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "1769071128f1b5c48c": {
+      "type": "_blocks",
+      "settings": {}
+    },
+    "176907122725f561e4": {
+      "type": "_blocks",
+      "settings": {}
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header",
+    "1768821759b02c33b6",
+    "17688903501e5a3c8b",
+    "custom_liquid_qXbUnD",
+    "17688903561c284d13",
+    "1768890393e04da07b",
+    "176889037058bac735",
+    "176889038096947fb3",
+    "1769071128f1b5c48c",
+    "176907122725f561e4"
+  ]
+}
