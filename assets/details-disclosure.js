@@ -36,6 +36,47 @@ class HeaderMenu extends DetailsDisclosure {
   constructor() {
     super();
     this.header = document.querySelector('.header-wrapper');
+    this.closeTimer = null;
+    
+    this.mainDetailsToggle.addEventListener('mouseover', this.onMouseOver.bind(this));
+    this.mainDetailsToggle.addEventListener('mouseleave', this.onMouseLeave.bind(this));
+    
+    // Add listeners to the content div for mega-menus
+    const contentDiv = this.mainDetailsToggle.querySelector('.mega-menu__content');
+    if (contentDiv) {
+      contentDiv.addEventListener('mouseover', this.onContentMouseOver.bind(this));
+      contentDiv.addEventListener('mouseleave', this.onContentMouseLeave.bind(this));
+    }
+  }
+
+  onMouseOver() {
+    if (window.innerWidth < 990) return;
+    clearTimeout(this.closeTimer);
+    this.mainDetailsToggle.open = true;
+    this.mainDetailsToggle.querySelector('summary').setAttribute('aria-expanded', true);
+  }
+
+  onMouseLeave() {
+    if (window.innerWidth < 990) return;
+    // Add a small delay to prevent closing when moving from summary to content
+    this.closeTimer = setTimeout(() => {
+      this.mainDetailsToggle.open = false;
+      this.mainDetailsToggle.querySelector('summary').setAttribute('aria-expanded', false);
+    }, 150);
+  }
+
+  onContentMouseOver() {
+    if (window.innerWidth < 990) return;
+    clearTimeout(this.closeTimer);
+    this.mainDetailsToggle.open = true;
+    this.mainDetailsToggle.querySelector('summary').setAttribute('aria-expanded', true);
+  }
+
+  onContentMouseLeave() {
+    if (window.innerWidth < 990) return;
+    // Close menu when leaving the content area
+    this.mainDetailsToggle.open = false;
+    this.mainDetailsToggle.querySelector('summary').setAttribute('aria-expanded', false);
   }
 
   onToggle() {

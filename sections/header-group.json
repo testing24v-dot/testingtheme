@@ -31,6 +31,29 @@
     },
     "header": {
       "type": "header",
+      "blocks": {
+        "mega_menu_jCynpr": {
+          "type": "mega_menu",
+          "settings": {
+            "menu_item": "Home",
+            "image": "shopify://shop_images/emphasize-specific-features-of-the-product-for-example-describe-the-premium-materials-used-in-the-products-construction-highlight-its-ability-to-withstand-wear-and-tear-or-challenging.png",
+            "link": "",
+            "blog": ""
+          }
+        },
+        "mega_menu_yXkjzU": {
+          "type": "mega_menu",
+          "settings": {
+            "menu_item": "Bloge",
+            "link": "",
+            "blog": "news"
+          }
+        }
+      },
+      "block_order": [
+        "mega_menu_jCynpr",
+        "mega_menu_yXkjzU"
+      ],
       "custom_css": [
         ".goog-te-gadget {display: none;}"
       ],
@@ -103,6 +126,12 @@
     "176907122725f561e4": {
       "type": "_blocks",
       "settings": {}
+    },
+    "1775480056c2bcc89d": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
     }
   },
   "order": [
@@ -116,6 +145,7 @@
     "176889037058bac735",
     "176889038096947fb3",
     "1769071128f1b5c48c",
-    "176907122725f561e4"
+    "176907122725f561e4",
+    "1775480056c2bcc89d"
   ]
 }

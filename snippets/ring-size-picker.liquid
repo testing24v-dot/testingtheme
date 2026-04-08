@@ -1,0 +1,203 @@
+{% comment %}
+  Renders a ring size picker for jewelry products
+  
+  Accepts:
+  - product: {Object} product object
+  - section_id: {String} section ID for unique identifiers
+  - block: {Object} block settings for customization
+  
+  Usage:
+  {% render 'ring-size-picker', product: product, section_id: section.id, block: block %}
+{% endcomment %}
+
+{% liquid
+  assign default_sizes = "3,4,5,6,7,8,9,10,11,12,13,14,15"
+  assign custom_sizes = block.settings.ring_sizes | default: default_sizes
+  assign label_text = block.settings.picker_label | default: "Ring Size"
+  assign show_guide = block.settings.show_size_guide | default: true
+  assign comma = ","
+  assign size_array = custom_sizes | split: comma
+%}
+
+<style>
+  .ring-size-picker {
+    margin: 20px 0;
+  }
+
+  .ring-size-picker__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 12px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .ring-size-picker__sizes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .ring-size-picker__size {
+    position: relative;
+  }
+
+  .ring-size-picker__size input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .ring-size-picker__size label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 2px solid #d3d3d3;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: #fff;
+    min-height: 45px;
+  }
+
+  .ring-size-picker__size input:checked + label {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .ring-size-picker__size input:hover + label {
+    border-color: #333;
+  }
+
+  .ring-size-picker__size input:disabled + label {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+  }
+
+  .ring-size-picker__guide {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    font-size: 13px;
+    align-items: center;
+  }
+
+  .ring-size-picker__guide-link {
+    color: #111;
+    text-decoration: underline;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .ring-size-picker__guide-link:hover {
+    color: #666;
+  }
+
+  @media (max-width: 600px) {
+    .ring-size-picker__sizes {
+      grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+      gap: 6px;
+    }
+
+    .ring-size-picker__size label {
+      padding: 8px;
+      font-size: 13px;
+      min-height: 40px;
+    }
+  }
+</style>
+
+<div class="ring-size-picker">
+  <label class="ring-size-picker__label" for="RingSize-{{ section_id }}">
+    {{ label_text }}
+  </label>
+
+  <div class="ring-size-picker__sizes" id="RingSizePicker-{{ section_id }}">
+    {% for size in size_array %}
+      {% if size != blank %}
+        {% capture size_id %}RingSize-{{ section_id }}-{{ forloop.index0 }}{% endcapture %}
+        <div class="ring-size-picker__size">
+          <input
+            type="radio"
+            id="{{ size_id }}"
+            name="ring-size"
+            value="{{ size | strip }}"
+            data-ring-size="{{ size | strip }}"
+            {% if forloop.first %}checked{% endif %}
+          >
+          <label for="{{ size_id }}">{{ size | strip }}</label>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if show_guide %}
+    <div class="ring-size-picker__guide">
+      <span>💍 {{ block.settings.guide_text | default: "Not sure about your size?" }}</span>
+      <a class="ring-size-picker__guide-link" href="#" id="RingSizeGuideBtn-{{ section_id }}">
+        {{ block.settings.guide_link_text | default: "View Size Guide" }}
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ringSizePicker = document.getElementById('RingSizePicker-{{ section_id }}');
+  if (!ringSizePicker) return;
+
+  const sizeInputs = ringSizePicker.querySelectorAll('input[name="ring-size"]');
+  const productForm = document.querySelector('form[action*="/cart/add"]');
+  const guideBtn = document.getElementById('RingSizeGuideBtn-{{ section_id }}');
+
+  if (sizeInputs.length && productForm) {
+    // Store selected ring size in form data
+    sizeInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        const existingInput = productForm.querySelector('input[name="properties[Ring Size]"]');
+        if (existingInput) {
+          existingInput.value = this.value;
+        } else {
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'properties[Ring Size]';
+          hiddenInput.value = this.value;
+          productForm.appendChild(hiddenInput);
+        }
+      });
+    });
+
+    // Set initial ring size
+    const checkedSize = ringSizePicker.querySelector('input[name="ring-size"]:checked');
+    if (checkedSize) {
+      const existingInput = productForm.querySelector('input[name="properties[Ring Size]"]');
+      if (!existingInput) {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'properties[Ring Size]';
+        hiddenInput.value = checkedSize.value;
+        productForm.appendChild(hiddenInput);
+      }
+    }
+  }
+
+  // Size guide button
+  if (guideBtn) {
+    guideBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const guideMessage = `{{ block.settings.guide_message | default: "Ring Size Guide:\n\n3-4: XS\n5-6: S\n7-8: M\n9-10: L\n11-12: XL\n13-15: XXL\n\nMeasure your ring or visit a jewelry store for accurate sizing." }}`;
+      alert(guideMessage);
+    });
+  }
+});
+</script>

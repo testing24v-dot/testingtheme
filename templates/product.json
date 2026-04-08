@@ -35,10 +35,9 @@
         },
         "variant_picker": {
           "type": "variant_picker",
-          "disabled": true,
           "settings": {
-            "picker_type": "button",
-            "swatch_shape": "circle"
+            "picker_type": "dropdown",
+            "swatch_shape": "square"
           }
         },
         "custom_liquid_mjT3FH": {

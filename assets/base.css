@@ -2681,15 +2681,12 @@ details[open] > .header__icon--menu .icon-hamburger {
   transform: scale(1.07);
 }
 
-.js details > .header__submenu {
-  opacity: 0;
-  transform: translateY(-1.5rem);
-}
-
-details[open] > .header__submenu {
-  animation: animateMenuOpen var(--duration-default) ease;
-  animation-fill-mode: forwards;
-  z-index: 1;
+details[open] > .header__submenu,
+.header__inline-menu details:hover > .header__submenu {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  display: block;
 }
 
 @media (prefers-reduced-motion) {
@@ -3192,43 +3189,5 @@ details-disclosure > details {
   display: block;
 }
 
-.has-mega {
-  position: relative;
-}
 
-.mega-menu {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  width: 100%;
-  background: #fff;
-  padding: 30px;
-  display: none;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-  z-index: 999;
-}
-
-.has-mega:hover .mega-menu {
-  display: block;
-}
-
-.mega-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.mega-card img {
-  width: 100%;
-  border-radius: 12px;
-}
-
-.mega-card h4 {
-  margin: 10px 0 5px;
-  font-size: 16px;
-}
-
-.mega-card p {
-  font-size: 14px;
-  color: #666;
-}
+/* Removed conflicting custom .mega-menu styling */

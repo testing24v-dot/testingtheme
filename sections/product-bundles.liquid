@@ -1,0 +1,557 @@
+{{ 'section-product-bundles.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<div class="color-{{ section.settings.color_scheme }} isolate gradient">
+  <div class="product-bundles section-{{ section.id }}-padding">
+    <div class="page-width">
+      <div class="product-bundles__header">
+        {% if section.settings.subtitle != blank %}
+          <span class="product-bundles__subtitle">{{ section.settings.subtitle | escape }}</span>
+        {% endif %}
+        <h2 class="product-bundles__title">{{ section.settings.title }}</h2>
+        {% if section.settings.description != blank %}
+          <div class="product-bundles__intro rte">{{ section.settings.description }}</div>
+        {% endif %}
+      </div>
+
+      <div class="product-bundles__grid">
+        {% for block in section.blocks %}
+          <div class="product-bundles__bundle" {{ block.shopify_attributes }}>
+            <div class="product-bundles__bundle-card">
+              {% if block.settings.badge != blank %}
+                <div class="product-bundles__badge">{{ block.settings.badge }}</div>
+              {% endif %}
+
+              <div class="product-bundles__items-preview">
+                <h3 class="product-bundles__bundle-title">{{ block.settings.title }}</h3>
+                
+                {% if block.settings.description != blank %}
+                  <p class="product-bundles__bundle-description">{{ block.settings.description }}</p>
+                {% endif %}
+
+                <div class="product-bundles__items-list">
+                  {% if block.settings.item_1 != blank %}
+                    <div class="product-bundles__item">✓ {{ block.settings.item_1 }}</div>
+                  {% endif %}
+                  {% if block.settings.item_2 != blank %}
+                    <div class="product-bundles__item">✓ {{ block.settings.item_2 }}</div>
+                  {% endif %}
+                  {% if block.settings.item_3 != blank %}
+                    <div class="product-bundles__item">✓ {{ block.settings.item_3 }}</div>
+                  {% endif %}
+                  {% if block.settings.item_4 != blank %}
+                    <div class="product-bundles__item">✓ {{ block.settings.item_4 }}</div>
+                  {% endif %}
+                  {% if block.settings.item_5 != blank %}
+                    <div class="product-bundles__item">✓ {{ block.settings.item_5 }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="product-bundles__pricing">
+                <div class="product-bundles__price-wrapper">
+                  {% if block.settings.original_price != blank %}
+                    <span class="product-bundles__original-price">₹{{ block.settings.original_price }}</span>
+                  {% endif %}
+                  <span class="product-bundles__price">₹{{ block.settings.bundle_price }}</span>
+                </div>
+
+                {% if block.settings.savings != blank %}
+                  <div class="product-bundles__savings">{{ block.settings.savings }}</div>
+                {% endif %}
+              </div>
+
+              {% if block.settings.button_label != blank %}
+                <a href="{{ block.settings.button_link }}" class="product-bundles__button button button--primary">
+                  {{ block.settings.button_label | escape }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if section.settings.show_faq %}
+        <div class="product-bundles__faq">
+          <h3 class="product-bundles__faq-title">Bundle FAQs</h3>
+          <div class="product-bundles__faq-items">
+            <details class="product-bundles__faq-item">
+              <summary class="product-bundles__faq-question">
+                5 items select करने पर क्या special offer है?
+                <span class="product-bundles__faq-icon">+</span>
+              </summary>
+              <div class="product-bundles__faq-answer">
+                <p>हाँ! जब आप 5 items select करते हैं तो सभी आइटम्स सिर्फ ₹1199 में मिल जाते हैं। यह एक exclusive Bundle Offer है जो अलग-अलग खरीदने से काफी सस्ता है।</p>
+              </div>
+            </details>
+
+            <details class="product-bundles__faq-item">
+              <summary class="product-bundles__faq-question">
+                क्या मैं अपना bundle customize कर सकता हूँ?
+                <span class="product-bundles__faq-icon">+</span>
+              </summary>
+              <div class="product-bundles__faq-answer">
+                <p>हाँ! हमारी customer service team से संपर्क करें और वह आपके लिए custom bundle बना देंगे।</p>
+              </div>
+            </details>
+
+            <details class="product-bundles__faq-item">
+              <summary class="product-bundles__faq-question">
+                Bundle items को return कर सकते हैं?
+                <span class="product-bundles__faq-icon">+</span>
+              </summary>
+              <div class="product-bundles__faq-answer">
+                <p>हाँ! सभी bundles हमारी 30-day return policy के तहत covered हैं। आप items को अलग-अलग return कर सकते हैं।</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-bundles__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .product-bundles__subtitle {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    display: block;
+    color: #888;
+  }
+
+  .product-bundles__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: #000;
+  }
+
+  .product-bundles__intro {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .product-bundles__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .product-bundles__bundle-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 2px solid transparent;
+  }
+
+  .product-bundles__bundle-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    border-color: #000;
+  }
+
+  .product-bundles__badge {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: #e74c3c;
+    color: #fff;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
+  .product-bundles__items-preview {
+    padding: 2.5rem 2rem 2rem;
+    flex-grow: 1;
+  }
+
+  .product-bundles__bundle-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.8rem;
+  }
+
+  .product-bundles__bundle-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .product-bundles__items-list {
+    margin-bottom: 2rem;
+  }
+
+  .product-bundles__item {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #555;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .product-bundles__item::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: #000;
+    border-radius: 50%;
+    margin-right: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .product-bundles__pricing {
+    background: #f9f9f9;
+    padding: 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .product-bundles__price-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .product-bundles__original-price {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .product-bundles__price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #e74c3c;
+  }
+
+  .product-bundles__savings {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #27ae60;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .product-bundles__button {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.1em;
+    padding: 1.2rem 2rem;
+    margin-top: 1.5rem;
+    border-radius: 50px;
+    width: calc(100% - 4rem);
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .product-bundles__button:hover {
+    background: #c0392b;
+    transform: translateY(-3px);
+  }
+
+  .product-bundles__faq {
+    background: #f9f9f9;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .product-bundles__faq-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #000;
+  }
+
+  .product-bundles__faq-item {
+    margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+  }
+
+  .product-bundles__faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+    background: #fff;
+    transition: background 0.3s ease;
+  }
+
+  .product-bundles__faq-question:hover {
+    background: #f5f5f5;
+  }
+
+  .product-bundles__faq-icon {
+    font-size: 1.3rem;
+    font-weight: 300;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .product-bundles__faq-item[open] .product-bundles__faq-icon {
+    transform: rotate(45deg);
+  }
+
+  .product-bundles__faq-answer {
+    padding: 1.5rem;
+    background: #fafafa;
+    border-top: 1px solid #e0e0e0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  .product-bundles__faq-answer p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-bundles__title {
+      font-size: 2.3rem;
+    }
+
+    .product-bundles__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .product-bundles__faq {
+      padding: 2rem 1.5rem;
+    }
+
+    .product-bundles__price {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Bundle Offers",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Special Bundle Offers - 5 Items for ₹1199",
+      "label": "Section Title"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "default": "Save More",
+      "label": "Subtitle"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "default": "<p>5 items को select करें और सिर्फ ₹1199 में सब कुछ पाएं। यह एक limited time offer है!</p>",
+      "label": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_faq",
+      "label": "Show FAQ Section",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        { "value": "accent-1", "label": "Accent 1" },
+        { "value": "accent-2", "label": "Accent 2" },
+        { "value": "background-1", "label": "Background 1" },
+        { "value": "background-2", "label": "Background 2" }
+      ],
+      "default": "background-1",
+      "label": "Color Scheme"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bundle",
+      "name": "Bundle Pack",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Bundle Name",
+          "default": "Premium Bundle"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Short Description",
+          "placeholder": "What's included"
+        },
+        {
+          "type": "text",
+          "id": "item_1",
+          "label": "Item 1",
+          "default": "Diamond Earrings"
+        },
+        {
+          "type": "text",
+          "id": "item_2",
+          "label": "Item 2",
+          "default": "Gold Necklace"
+        },
+        {
+          "type": "text",
+          "id": "item_3",
+          "label": "Item 3",
+          "default": "Diamond Ring"
+        },
+        {
+          "type": "text",
+          "id": "item_4",
+          "label": "Item 4",
+          "default": "Pearl Bracelet"
+        },
+        {
+          "type": "text",
+          "id": "item_5",
+          "label": "Item 5",
+          "default": "Silver Pendant"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge Text",
+          "placeholder": "e.g., Best Seller",
+          "default": "Limited Time"
+        },
+        {
+          "type": "text",
+          "id": "original_price",
+          "label": "Original Price",
+          "placeholder": "e.g., 2500"
+        },
+        {
+          "type": "text",
+          "id": "bundle_price",
+          "label": "Bundle Price (5 Items)",
+          "default": "1199"
+        },
+        {
+          "type": "text",
+          "id": "savings",
+          "label": "Savings Text",
+          "placeholder": "e.g., Save 50%",
+          "default": "Save 52%"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Add Bundle to Cart",
+          "label": "Button Label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Offers",
+      "blocks": [
+        { "type": "bundle" },
+        { "type": "bundle" },
+        { "type": "bundle" }
+      ]
+    }
+  ]
+}
+{% endschema %}

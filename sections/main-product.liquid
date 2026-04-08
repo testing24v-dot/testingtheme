@@ -476,6 +476,9 @@
               {%- when 'variant_picker' -%}
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
 
+              {%- when 'ring_size_picker' -%}
+                {% render 'ring-size-picker', product: product, section_id: section.id, block: block %}
+
               {%- when 'buy_buttons' -%}
                 {% comment %} ============================================================
                   QEPOS — Original Add to Cart + Quote Form button neeche
@@ -779,6 +782,49 @@
       "settings": [
         { "type": "select", "id": "picker_type", "options": [{ "value": "dropdown", "label": "t:sections.main-product.blocks.variant_picker.settings.picker_type.options__1.label" },{ "value": "button", "label": "t:sections.main-product.blocks.variant_picker.settings.picker_type.options__2.label" }], "default": "button", "label": "t:sections.main-product.blocks.variant_picker.settings.picker_type.label" },
         { "id": "swatch_shape", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.label", "type": "select", "info": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.info", "options": [{ "value": "circle", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.options__1.label" },{ "value": "square", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.options__2.label" },{ "value": "none", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.options__3.label" }], "default": "circle" }
+      ]
+    },
+    {
+      "type": "ring_size_picker", "name": "Ring Size Picker", "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "picker_label",
+          "label": "Label Text",
+          "default": "Ring Size"
+        },
+        {
+          "type": "textarea",
+          "id": "ring_sizes",
+          "label": "Ring Sizes (comma separated)",
+          "default": "3,4,5,6,7,8,9,10,11,12,13,14,15",
+          "info": "Enter sizes separated by commas. Example: 3,4,5,6,7,8,9,10"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_size_guide",
+          "label": "Show Size Guide",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "guide_text",
+          "label": "Guide Text",
+          "default": "Not sure about your size?"
+        },
+        {
+          "type": "text",
+          "id": "guide_link_text",
+          "label": "Guide Link Text",
+          "default": "View Size Guide"
+        },
+        {
+          "type": "textarea",
+          "id": "guide_message",
+          "label": "Size Guide Message",
+          "default": "Ring Size Guide:\n\n3-4: XS\n5-6: S\n7-8: M\n9-10: L\n11-12: XL\n13-15: XXL\n\nMeasure your ring or visit a jewelry store for accurate sizing.",
+          "info": "This message shows when clicking 'View Size Guide'"
+        }
       ]
     },
     {

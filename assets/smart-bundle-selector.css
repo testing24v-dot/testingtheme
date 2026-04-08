@@ -1,0 +1,4 @@
+/* Smart Bundle Selector Styles */
+.smart-bundle__item-checkbox:checked {
+  appearance: auto;
+}

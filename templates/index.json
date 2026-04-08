@@ -163,6 +163,18 @@
         "padding_bottom": 36
       }
     },
+    "callback_request_zYdF4V": {
+      "type": "callback-request",
+      "name": "Callback Request",
+      "settings": {
+        "title": "Ready To Get Started?",
+        "description": "Talk to our team today and learn how we can help your business.",
+        "button_text": "Request a Callback",
+        "background_color": "#f8f9fa",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
     "1766135390002f0600": {
       "type": "apps",
       "settings": {
@@ -278,6 +290,25 @@
         "padding_top": 40,
         "padding_bottom": 52
       }
+    },
+    "jewelry_spotlight_eiBG9K": {
+      "type": "jewelry-spotlight",
+      "name": "Jewelry Spotlight",
+      "settings": {
+        "image": "shopify://shop_images/explain-how-the-product-adapts-to-different-use-cases-or-environments-show-how-the-product-seamlessly-integrates-into-various-aspects-of-the-user-s-life-work-leisure-etc-highlight-spe.png",
+        "section_height": 50,
+        "full_width": true,
+        "heading": "Timeless Elegance",
+        "heading_size": "h2",
+        "subheading": "New Collection",
+        "text": "<p>Discover our latest hand-crafted masterpieces designed for your most precious moments.</p>",
+        "desktop_content_position": "left",
+        "button_label": "Shop Now",
+        "button_link": "",
+        "button_style": "secondary",
+        "padding_top": 32,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
@@ -285,11 +316,13 @@
     "featured_collection",
     "f1552b18-6017-4231-810d-74e61da22c37",
     "38cdf60f-e431-43b5-aac3-7e6215447d67",
+    "callback_request_zYdF4V",
     "1766135390002f0600",
     "featured_product_TMHfd9",
     "custom_productivity_qXAekx",
     "custom_liquid_ckLWJz",
     "custom_pick_bundle_aVUAhk",
-    "custom_liquid_wb7pdG"
+    "custom_liquid_wb7pdG",
+    "jewelry_spotlight_eiBG9K"
   ]
 }

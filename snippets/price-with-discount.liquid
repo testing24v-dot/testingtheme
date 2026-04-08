@@ -1,0 +1,163 @@
+{% comment %}
+  Renders product price with automatic discount based on price tiers
+  
+  Discount Rules:
+  - Below ₹500: 3% Discount
+  - ₹500-₹1000: 5% Discount
+  - Above ₹1000: 7% Discount
+
+  Accepts:
+  - product: {Object} Product Liquid object (optional)
+  - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
+  - show_badges: {Boolean} Renders 'Sale' and 'Sold Out' tags if the product matches the condition (optional)
+  - price_class: {String} Adds a price class to the price element (optional)
+
+  Usage:
+  {% render 'price-with-discount', product: product %}
+{% endcomment %}
+
+{%- liquid
+  if use_variant
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = product
+  endif
+
+  assign compare_at_price = target.compare_at_price
+  assign price = target.price | default: 1999
+  assign available = target.available | default: false
+  assign money_price = price | money
+  if settings.currency_code_enabled
+    assign money_price = price | money_with_currency
+  endif
+
+  if target == product and product.price_varies
+    assign money_price = 'products.product.price.from_price_html' | t: price: money_price
+  endif
+
+  assign show_price = true
+  assign product_tags = product.tags | join: ',' | downcase
+  if product_tags contains 'quote' or product.metafields.custom.show_quote_button == true
+    assign show_price = false
+  endif
+  
+  comment
+    Discount Calculation
+    Determine discount percentage based on price tiers
+  endcomment
+  
+  assign discount_percent = 0
+  assign price_in_rupees = price | divided_by: 100.0
+  
+  if price_in_rupees < 500
+    assign discount_percent = 3
+  elsif price_in_rupees < 1000
+    assign discount_percent = 5
+  else
+    assign discount_percent = 7
+  endif
+  
+  comment
+    Calculate discounted price
+  endcomment
+  assign discount_amount = price | times: discount_percent | divided_by: 100
+  assign discounted_price = price | minus: discount_amount
+  assign discounted_money = discounted_price | money
+  
+  if settings.currency_code_enabled
+    assign discounted_money = discounted_price | money_with_currency
+  endif
+-%}
+
+{%- if show_price -%}
+
+<div class="
+    price
+    {%- if price_class %} {{ price_class }}{% endif -%}
+    {%- if available == false %} price--sold-out {% endif -%}
+    {%- if compare_at_price > price %} price--on-sale {% endif -%}
+    {%- if product.price_varies == false and product.compare_at_price_varies %} price--no-compare{% endif -%}
+    {%- if show_badges %} price--show-badge{% endif -%}
+    {%- if discount_percent > 0 %} price--with-discount{% endif -%}
+  "
+  data-original-price="{{ price }}"
+>
+  <div class="price__container">
+    <div class="price__regular">
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
+      <span class="price-item price-item--regular original-price-display">
+        {{ money_price }}
+      </span>
+    </div>
+    
+    {%- if discount_percent > 0 -%}
+      <div class="price__discount">
+        <span class="discount-badge discount-badge--{{ discount_percent }}">
+          {{ discount_percent }}% OFF
+        </span>
+        <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+        <span class="price-item price-item--sale price-display price-item--last">
+          {{ discounted_money }}
+        </span>
+        <small class="discount-savings">
+          You save: {% if settings.currency_code_enabled %}{{ discount_amount | money_with_currency }}{% else %}{{ discount_amount | money }}{% endif %}
+        </small>
+      </div>
+    {%- else -%}
+      <div class="price__sale">
+        {%- unless product.price_varies == false and product.compare_at_price_varies %}
+          <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
+          <span>
+            <s class="price-item price-item--regular">
+              {% if settings.currency_code_enabled %}
+                {{ compare_at_price | money_with_currency }}
+              {% else %}
+                {{ compare_at_price | money }}
+              {% endif %}
+            </s>
+          </span>
+        {%- endunless -%}
+        <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.sale_price' | t }}</span>
+        <span class="price-item price-item--sale price-item--last">
+          {{ money_price }}
+        </span>
+      </div>
+    {%- endif -%}
+    
+    <small class="unit-price caption{% if product.selected_or_first_available_variant.unit_price_measurement == nil %} hidden{% endif %}">
+      <span class="visually-hidden">{{ 'products.product.price.unit_price' | t }}</span>
+      <span class="price-item price-item--last">
+        <span>{{- product.selected_or_first_available_variant.unit_price | money -}}</span>
+        <span aria-hidden="true">/</span>
+        <span class="visually-hidden">&nbsp;{{ 'accessibility.unit_price_separator' | t }}&nbsp;</span>
+        <span>
+          {%- if product.selected_or_first_available_variant.unit_price_measurement.reference_value != 1 -%}
+            {{- product.selected_or_first_available_variant.unit_price_measurement.reference_value -}}
+          {%- endif -%}
+          {{ product.selected_or_first_available_variant.unit_price_measurement.reference_unit }}
+        </span>
+      </span>
+    </small>
+  </div>
+  
+  {%- if show_badges -%}
+    {%- if discount_percent > 0 -%}
+      <span class="badge price__badge-discount color-accent">
+        {{ discount_percent }}% Auto Discount
+      </span>
+    {%- else -%}
+      {% if compare_at_price > price %}
+        <span class="badge price__badge-sale color-{{ settings.sale_badge_color_scheme }}">
+          {{ 'products.product.on_sale' | t }}
+        </span>
+      {% endif %}
+    {%- endif -%}
+
+    {%- if available == false -%}
+      <span class="badge price__badge-sold-out color-{{ settings.sold_out_badge_color_scheme }}">
+        {{ 'products.product.sold_out' | t }}
+      </span>
+    {%- endif -%}
+  {%- endif -%}
+
+{%- endif -%}

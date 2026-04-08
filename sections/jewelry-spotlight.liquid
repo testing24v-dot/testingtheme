@@ -1,0 +1,317 @@
+{{ 'section-jewelry-spotlight.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<div class="jewelry-spotlight section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient">
+  <div class="jewelry-spotlight__container {% if section.settings.full_width %}jewelry-spotlight__container--full{% else %}page-width{% endif %}">
+    <div class="jewelry-spotlight__wrapper">
+      
+      {%- if section.settings.image != blank -%}
+        <div class="jewelry-spotlight__media-container">
+          {{ section.settings.image | image_url: width: 3840 | image_tag:
+            loading: 'lazy',
+            height: section.settings.image.height,
+            width: section.settings.image.width,
+            class: 'jewelry-spotlight__image',
+            sizes: '100vw',
+            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+          }}
+        </div>
+      {%- else -%}
+        <div class="jewelry-spotlight__media-container placeholder">
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+
+      <div class="jewelry-spotlight__content-box jewelry-spotlight__content-box--{{ section.settings.desktop_content_position }} jewelry-spotlight__content-box--mobile-{{ section.settings.mobile_content_alignment }}">
+        <div class="jewelry-spotlight__content glass-effect">
+          {%- if section.settings.subheading != blank -%}
+            <span class="jewelry-spotlight__subheading subtitle">{{ section.settings.subheading | escape }}</span>
+          {%- endif -%}
+          
+          {%- if section.settings.heading != blank -%}
+            <h2 class="jewelry-spotlight__heading inline-richtext {{ section.settings.heading_size }}">
+              {{ section.settings.heading }}
+            </h2>
+          {%- endif -%}
+
+          {%- if section.settings.text != blank -%}
+            <div class="jewelry-spotlight__text rte">
+              {{ section.settings.text }}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.button_label != blank -%}
+            <div class="jewelry-spotlight__buttons">
+              <a {% if section.settings.button_link == blank %} role="link" aria-disabled="true" {% else %} href="{{ section.settings.button_link }}" {% endif %}
+                class="jewelry-spotlight__button button button--{{ section.settings.button_style }}">
+                {{ section.settings.button_label | escape }}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .jewelry-spotlight {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .jewelry-spotlight__wrapper {
+    position: relative;
+    min-height: 500px;
+    height: {{ section.settings.section_height }}vh;
+    display: flex;
+    align-items: center;
+    border-radius: {% if section.settings.full_width %}0{% else %}20px{% endif %};
+    overflow: hidden;
+  }
+
+  .jewelry-spotlight__media-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    transition: transform 1.5s ease;
+  }
+
+  .jewelry-spotlight__wrapper:hover .jewelry-spotlight__media-container {
+    transform: scale(1.05);
+  }
+
+  .jewelry-spotlight__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .jewelry-spotlight__content-box {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+  }
+
+  .jewelry-spotlight__content-box--left { justify-content: flex-start; }
+  .jewelry-spotlight__content-box--center { justify-content: center; }
+  .jewelry-spotlight__content-box--right { justify-content: flex-end; }
+
+  .jewelry-spotlight__content {
+    max-width: 550px;
+    width: 100%;
+    align-self: center;
+    padding: 3rem;
+    text-align: center;
+    transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.8s ease;
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .jewelry-spotlight__subheading {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    display: block;
+    color: #fff;
+  }
+
+  .jewelry-spotlight__heading {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 4rem;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    color: #fff;
+  }
+
+  .jewelry-spotlight__text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .jewelry-spotlight__button {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.1em;
+    padding: 1.5rem 4rem;
+    border-radius: 50px;
+    background: #fff;
+    color: #000;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .jewelry-spotlight__button:hover {
+    background: #000;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  @media screen and (max-width: 749px) {
+    .jewelry-spotlight__heading {
+      font-size: 3rem;
+    }
+    .jewelry-spotlight__content {
+      padding: 2rem;
+    }
+    .jewelry-spotlight__wrapper {
+      min-height: 400px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Jewelry Spotlight",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Section Height",
+      "default": 80
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width",
+      "default": true
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "Timeless Elegance",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "Small" },
+        { "value": "h1", "label": "Medium" },
+        { "value": "h0", "label": "Large" }
+      ],
+      "default": "h1",
+      "label": "Heading Size"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "New Collection",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "default": "<p>Discover our latest hand-crafted masterpieces designed for your most precious moments.</p>",
+      "label": "Description"
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "label": "Desktop Content Alignment"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Shop Now",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "options": [
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" }
+      ],
+      "default": "primary",
+      "label": "Button Style"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Jewelry Spotlight"
+    }
+  ]
+}
+{% endschema %}

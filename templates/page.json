@@ -15,9 +15,25 @@
         "padding_top": 28,
         "padding_bottom": 28
       }
+    },
+    "17754800819a7a56d2": {
+      "type": "apps",
+      "blocks": {
+        "ai_product_bundle_builder_page_bundle_LQMXkz": {
+          "type": "shopify://apps/ai-product-bundle-builder/blocks/page_bundle/889077c6-270f-4a8f-99af-5c8dcf42ef52",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "ai_product_bundle_builder_page_bundle_LQMXkz"
+      ],
+      "settings": {
+        "include_margins": true
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "17754800819a7a56d2"
   ]
 }

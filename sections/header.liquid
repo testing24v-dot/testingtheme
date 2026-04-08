@@ -531,71 +531,96 @@ function googleTranslateElementInit() {
           <ul class="list-menu list-menu--inline" role="list">
             {%- for link in section.settings.menu.links -%}
               <li>
-                {%- if link.links != blank -%}
+                {%- liquid
+                  assign mega_menu_block = nil
+                  assign link_title_downcase = link.title | downcase | strip
+                  for block in section.blocks
+                    assign block_menu_item_downcase = block.settings.menu_item | downcase | strip
+                    if block.type == 'mega_menu' and block_menu_item_downcase == link_title_downcase
+                      assign mega_menu_block = block
+                      break
+                    endif
+                  endfor
+                -%}
+                {%- if link.links != blank or mega_menu_block != blank -%}
                   <header-menu>
                     <details id="Details-HeaderMenu-{{ forloop.index }}" class="mega-menu">
                       <summary class="header__menu-item list-menu__item link focus-inset">
                         <span {%- if link.child_active %} class="header__active-menu-item"{% endif %}>{{ link.title | escape }}</span>
                         {% render 'icon-caret' %}
                       </summary>
-                      {%- liquid
-                        assign mega_menu_block = nil
-                        for block in section.blocks
-                          if block.type == 'mega_menu' and block.settings.menu_item == link.title
-                            assign mega_menu_block = block
-                            break
-                          endif
-                        endfor
-                      -%}
-                      <div id="MegaMenu-Content-{{ forloop.index }}" class="mega-menu__content gradient motion-reduce global-settings-popup{% if mega_menu_block %} mega-menu__content--with-image{% endif %}" tabindex="-1">
+                      <div id="MegaMenu-Content-{{ forloop.index }}" class="mega-menu__content gradient motion-reduce global-settings-popup{% if mega_menu_block %} mega-menu__content--{% if mega_menu_block.settings.blog != blank %}blog{% else %}with-image{% endif %}{% endif %}" tabindex="-1">
                         <div class="page-width">
                           <div class="mega-menu__flex-container">
-                            <ul class="mega-menu__list {% if link.levels == 1 %} mega-menu__list--condensed{% endif %}" role="list">
-                              {%- for childlink in link.links -%}
-                                <li>
-                                  <a href="{{ childlink.url }}" class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"{% if childlink.current %} aria-current="page"{% endif %}>
-                                    {{ childlink.title | escape }}
-                                  </a>
-                                  {%- if childlink.links != blank -%}
-                                    <ul class="list-unstyled" role="list">
-                                      {%- for grandchildlink in childlink.links -%}
-                                        <li>
-                                          <a href="{{ grandchildlink.url }}" class="mega-menu__link link{% if grandchildlink.current %} mega-menu__link--active{% endif %}"{% if grandchildlink.current %} aria-current="page"{% endif %}>
-                                            {{ grandchildlink.title | escape }}
-                                          </a>
-                                        </li>
-                                      {%- endfor -%}
-                                    </ul>
-                                  {%- endif -%}
-                                </li>
-                              {%- endfor -%}
-                            </ul>
-                            
-                            {%- if mega_menu_block -%}
-                              <div class="mega-menu__image-column">
-                                {%- if mega_menu_block.settings.link -%}
-                                  <a href="{{ mega_menu_block.settings.link }}" class="mega-menu__image-wrapper">
-                                {%- else -%}
-                                  <div class="mega-menu__image-wrapper">
-                                {%- endif -%}
-
-                                  {%- if mega_menu_block.settings.image -%}
-                                    {{ mega_menu_block.settings.image | image_url: width: 600 | image_tag:
-                                      loading: 'lazy',
-                                      width: mega_menu_block.settings.image.width,
-                                      height: mega_menu_block.settings.image.height,
-                                      class: 'mega-menu__image motion-reduce'
-                                    }}
-                                  {%- else -%}
-                                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                                  {%- endif -%}
-
-                                {%- if mega_menu_block.settings.link -%}
-                                  </a>
-                                {%- else -%}
+                            {%- if mega_menu_block.settings.blog != blank -%}
+                              <div class="mega-menu__blog-list">
+                                {%- for article in mega_menu_block.settings.blog.articles limit: 4 -%}
+                                  <div class="mega-menu__blog-card">
+                                    <a href="{{ article.url }}" class="mega-menu__blog-image-wrapper">
+                                      {%- if article.image -%}
+                                        {{ article.image | image_url: width: 450 | image_tag: loading: 'lazy', class: 'mega-menu__blog-image' }}
+                                      {%- else -%}
+                                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                                      {%- endif -%}
+                                    </a>
+                                    <div class="mega-menu__blog-info">
+                                      <span class="mega-menu__blog-author">{{ article.author }}</span>
+                                      <span class="mega-menu__blog-date">{{ article.published_at | time_tag: format: 'date' }}</span>
+                                      <h3 class="mega-menu__blog-title">
+                                        <a href="{{ article.url }}">{{ article.title | escape }}</a>
+                                      </h3>
+                                    </div>
                                   </div>
-                                {%- endif -%}
+                                {%- endfor -%}
                               </div>
+                            {%- else -%}
+                              <ul class="mega-menu__list {% if link.levels == 1 %} mega-menu__list--condensed{% endif %}" role="list">
+                                {%- for childlink in link.links -%}
+                                  <li>
+                                    <a href="{{ childlink.url }}" class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"{% if childlink.current %} aria-current="page"{% endif %}>
+                                      {{ childlink.title | escape }}
+                                    </a>
+                                    {%- if childlink.links != blank -%}
+                                      <ul class="list-unstyled" role="list">
+                                        {%- for grandchildlink in childlink.links -%}
+                                          <li>
+                                            <a href="{{ grandchildlink.url }}" class="mega-menu__link link{% if grandchildlink.current %} mega-menu__link--active{% endif %}"{% if grandchildlink.current %} aria-current="page"{% endif %}>
+                                              {{ grandchildlink.title | escape }}
+                                            </a>
+                                          </li>
+                                        {%- endfor -%}
+                                      </ul>
+                                    {%- endif -%}
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                              
+                              {%- if mega_menu_block -%}
+                                <div class="mega-menu__image-column">
+                                  {%- if mega_menu_block.settings.link -%}
+                                    <a href="{{ mega_menu_block.settings.link }}" class="mega-menu__image-wrapper">
+                                  {%- else -%}
+                                    <div class="mega-menu__image-wrapper">
+                                  {%- endif -%}
+
+                                    {%- if mega_menu_block.settings.image -%}
+                                      {{ mega_menu_block.settings.image | image_url: width: 600 | image_tag:
+                                        loading: 'lazy',
+                                        width: mega_menu_block.settings.image.width,
+                                        height: mega_menu_block.settings.image.height,
+                                        class: 'mega-menu__image motion-reduce'
+                                      }}
+                                    {%- else -%}
+                                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                                    {%- endif -%}
+
+                                  {%- if mega_menu_block.settings.link -%}
+                                    </a>
+                                  {%- else -%}
+                                    </div>
+                                  {%- endif -%}
+                                </div>
+                              {%- endif -%}
                             {%- endif -%}
                           </div>
                         </div>
@@ -1170,6 +1195,11 @@ function googleTranslateElementInit() {
           "type": "url",
           "id": "link",
           "label": "Image Link (Optional)"
+        },
+        {
+          "type": "blog",
+          "id": "blog",
+          "label": "Blog to display"
         }
       ]
     }

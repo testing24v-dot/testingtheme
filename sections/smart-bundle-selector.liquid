@@ -1,0 +1,527 @@
+{{ 'smart-bundle-selector.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'smart-bundle-selector.js' | asset_url }}" defer="defer"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="smart-bundle section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    <div class="smart-bundle__container">
+      <div class="smart-bundle__header">
+        <span class="smart-bundle__badge">{{ section.settings.badge_text }}</span>
+        <h2 class="smart-bundle__title">{{ section.settings.title }}</h2>
+        <p class="smart-bundle__subtitle">{{ section.settings.subtitle }}</p>
+      </div>
+
+      <div class="smart-bundle__content">
+        <div class="smart-bundle__items-section">
+          <h3 class="smart-bundle__section-title">अपने 5 आइटम चुनें</h3>
+          <div class="smart-bundle__items-grid" data-bundle-selector>
+            {% for block in section.blocks %}
+              <div class="smart-bundle__item-card" {{ block.shopify_attributes }}>
+                <input 
+                  type="checkbox" 
+                  class="smart-bundle__item-checkbox" 
+                  data-item-id="{{ forloop.index }}"
+                  data-item-name="{{ block.settings.item_name }}"
+                  data-item-price="{{ block.settings.item_price }}"
+                >
+                <div class="smart-bundle__item-content">
+                  {% if block.settings.item_image != blank %}
+                    {{ block.settings.item_image | image_url: width: 200 | image_tag:
+                      loading: 'lazy',
+                      class: 'smart-bundle__item-image',
+                      sizes: '150px',
+                      widths: '150, 200'
+                    }}
+                  {% else %}
+                    <div class="smart-bundle__item-image placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {% endif %}
+                  
+                  <div class="smart-bundle__item-info">
+                    <h4 class="smart-bundle__item-name">{{ block.settings.item_name }}</h4>
+                    <p class="smart-bundle__item-price">₹{{ block.settings.item_price }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="smart-bundle__summary">
+          <div class="smart-bundle__summary-card">
+            <div class="smart-bundle__summary-item">
+              <span class="smart-bundle__summary-label">Selected Items:</span>
+              <span class="smart-bundle__summary-value" id="selected-count">0</span>
+            </div>
+
+            <div class="smart-bundle__summary-item">
+              <span class="smart-bundle__summary-label">Regular Price:</span>
+              <span class="smart-bundle__summary-value" id="regular-price">₹0</span>
+            </div>
+
+            <div class="smart-bundle__divider"></div>
+
+            <div class="smart-bundle__price-section">
+              <div id="regular-checkout" class="smart-bundle__price-option">
+                <p class="smart-bundle__price-label">Regular Price</p>
+                <p class="smart-bundle__final-price" id="final-regular-price">₹0</p>
+              </div>
+
+              <div id="bundle-checkout" class="smart-bundle__price-option smart-bundle__price-option--hidden">
+                <div class="smart-bundle__bundle-badge">SPECIAL OFFER</div>
+                <p class="smart-bundle__price-label">Bundle Price (5 Items)</p>
+                <p class="smart-bundle__final-price smart-bundle__final-price--red">₹{{ section.settings.bundle_price }}</p>
+                <p class="smart-bundle__savings">Save ₹<span id="save-amount">0</span></p>
+              </div>
+            </div>
+
+            <button class="smart-bundle__add-btn" id="bundle-add-btn" disabled>
+              Select 5 Items
+            </button>
+
+            <p class="smart-bundle__note">{{ section.settings.footer_note }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .smart-bundle {
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .smart-bundle__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .smart-bundle__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .smart-bundle__badge {
+    display: inline-block;
+    background: #e74c3c;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .smart-bundle__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 1rem;
+  }
+
+  .smart-bundle__subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .smart-bundle__content {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 3rem;
+    margin-top: 2rem;
+    align-items: start;
+    position: relative;
+  }
+
+  .smart-bundle__items-section {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .smart-bundle__section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 2rem;
+  }
+
+  .smart-bundle__items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .smart-bundle__item-card {
+    position: relative;
+    cursor: pointer;
+    overflow: visible;
+  }
+
+  .smart-bundle__item-checkbox {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 10;
+    accent-color: #e74c3c;
+  }
+
+  .smart-bundle__item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .smart-bundle__item-card input:checked ~ .smart-bundle__item-content {
+    background: #fff5f5;
+    border-color: #e74c3c;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);
+  }
+
+  .smart-bundle__item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .smart-bundle__item-info {
+    width: 100%;
+  }
+
+  .smart-bundle__item-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 0.5rem;
+  }
+
+  .smart-bundle__item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e74c3c;
+    margin: 0;
+  }
+
+  .smart-bundle__summary {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .smart-bundle__summary-card {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    width: 100%;
+  }
+
+  .smart-bundle__summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .smart-bundle__summary-label {
+    color: #666;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .smart-bundle__summary-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .smart-bundle__divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 1.5rem 0;
+  }
+
+  .smart-bundle__price-section {
+    min-height: 120px;
+    margin-bottom: 1.5rem;
+  }
+
+  .smart-bundle__price-option {
+    text-align: center;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .smart-bundle__price-option--hidden {
+    display: none;
+  }
+
+  .smart-bundle__bundle-badge {
+    display: inline-block;
+    background: #27ae60;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .smart-bundle__price-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .smart-bundle__final-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+  }
+
+  .smart-bundle__final-price--red {
+    color: #e74c3c;
+  }
+
+  .smart-bundle__savings {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: #27ae60;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  .smart-bundle__add-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: #999;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+  }
+
+  .smart-bundle__add-btn:not(:disabled) {
+    background: #e74c3c;
+    cursor: pointer;
+  }
+
+  .smart-bundle__add-btn:not(:disabled):hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+  }
+
+  .smart-bundle__note {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: #999;
+    text-align: center;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 900px) {
+    .smart-bundle__title {
+      font-size: 2rem;
+    }
+
+    .smart-bundle__content {
+      grid-template-columns: 1fr;
+      align-items: auto;
+    }
+
+    .smart-bundle__items-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .smart-bundle__title {
+      font-size: 1.6rem;
+    }
+
+    .smart-bundle__items-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .smart-bundle__item-content {
+      padding: 1rem;
+    }
+
+    .smart-bundle__final-price {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Smart Bundle",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "default": "Limited Time Offer",
+      "label": "Badge Text"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "default": "5 Items के लिए सिर्फ ₹1199",
+      "label": "Section Title"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "default": "अपने पसंदीदा 5 आइटम चुनें और बचाएं 50% तक",
+      "label": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "bundle_price",
+      "default": "1199",
+      "label": "Bundle Price (₹)"
+    },
+    {
+      "type": "text",
+      "id": "footer_note",
+      "default": "Free Shipping on Orders Above ₹999",
+      "label": "Footer Note"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        { "value": "accent-1", "label": "Accent 1" },
+        { "value": "accent-2", "label": "Accent 2" },
+        { "value": "background-1", "label": "Background 1" },
+        { "value": "background-2", "label": "Background 2" }
+      ],
+      "default": "background-1",
+      "label": "Color Scheme"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bundle_item",
+      "name": "Bundle Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "item_image",
+          "label": "Item Image"
+        },
+        {
+          "type": "text",
+          "id": "item_name",
+          "label": "Item Name",
+          "default": "Item 1"
+        },
+        {
+          "type": "text",
+          "id": "item_price",
+          "label": "Item Price",
+          "default": "299"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Smart Bundle",
+      "blocks": [
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" },
+        { "type": "bundle_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
